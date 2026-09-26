@@ -2,6 +2,8 @@
 
 A custom [ArcGIS Experience Builder](https://developers.arcgis.com/experience-builder/) widget that lets app designers build print/export layout templates — title, logo, legend, scale bar, north arrow, attribute table, feature popup card, and more, arranged with a drag-and-drop editor — and lets app viewers export the connected map to a high-resolution PNG or open a print-ready preview tab, right from the running app.
 
+**[Try the live demo](https://mhoyland.github.io/print-experience/)**
+
 ![Example export produced by the widget](screenshots/example-export.png)
 
 ## Features
