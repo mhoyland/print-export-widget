@@ -24,7 +24,12 @@ export async function importTemplateFromFile (file: File): Promise<Layout> {
   if (!isLayout(parsed)) {
     throw new Error('That file is not a print/export template.')
   }
-  return { ...parsed, id: crypto.randomUUID() }
+  // `portalItemId` is dropped too: a file can come from another portal or account, or point at an item
+  // that has since been deleted, and a later "Save to Portal" would then try to update an item this
+  // user doesn't have or that no longer exists (CONT_0001) instead of creating their own.
+  const imported: Layout = { ...parsed, id: crypto.randomUUID() }
+  delete imported.portalItemId
+  return imported
 }
 
 export function isLayout (value: unknown): value is Layout {

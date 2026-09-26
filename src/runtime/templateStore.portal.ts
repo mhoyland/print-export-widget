@@ -65,12 +65,20 @@ export async function savePortalTemplate (layout: Layout): Promise<string> {
   const text = JSON.stringify(layout)
 
   if (layout.portalItemId) {
-    await esri.restPortal.updateItem({
-      item: { id: layout.portalItemId, title: layout.name },
-      text,
-      authentication: session
-    })
-    return layout.portalItemId
+    try {
+      // `text` has to sit inside `item` here — unlike createItem below, updateItem only forwards the
+      // fields of `item` to the portal and silently ignores a top-level `text`, which is how a re-save
+      // used to succeed while only ever updating the title and never the template's actual content.
+      await esri.restPortal.updateItem({
+        item: { id: layout.portalItemId, title: layout.name, text },
+        authentication: session
+      })
+      return layout.portalItemId
+    } catch (error) {
+      // The remembered item was deleted (or isn't accessible to this user) since it was last saved —
+      // fall through and create a fresh item rather than leaving the template permanently unsavable.
+      if (!(error instanceof Error && error.message.includes('CONT_0001'))) throw error
+    }
   }
 
   const response = await esri.restPortal.createItem({
